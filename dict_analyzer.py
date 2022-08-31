@@ -1,4 +1,7 @@
 from dataclasses import dataclass
+import json
+from pathlib import Path
+import yaml
 
 
 @dataclass
@@ -46,3 +49,27 @@ def analyze_list(a: list, depth: int = 0) -> data:
 
 def analyze_other(o: object, depth: int = 0) -> data:
     return data(oCount=1, maxDepth=depth)
+
+
+def export(import_path: Path, export_path: Path = None):
+    stem = import_path.stem
+    with open(import_path) as f:
+        d = json.loads(f.read())
+
+    summary = analyze_dict(d)
+    ysummary = {
+        stem: {
+            "source": import_path.name,
+            "dicts": summary.dCount,
+            "lists": summary.lCount,
+            "objects": summary.oCount,
+            "maxLength": summary.maxLen,
+            "depth": summary.maxDepth,
+        }
+    }
+
+    if not export_path:
+        export_path = import_path.parent / stem / "yml"
+
+    with open(export_path, "w") as f:
+        yaml.dump(ysummary, f, sort_keys=False)

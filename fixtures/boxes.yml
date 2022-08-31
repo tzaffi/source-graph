@@ -1,0 +1,7 @@
+boxes:
+  source: boxes.json
+  dicts: 312
+  lists: 59
+  objects: 803
+  maxLength: 45
+  depth: 11
